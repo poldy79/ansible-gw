@@ -1,0 +1,7 @@
+---
+- hosts: gws
+  tasks:
+    - name: google dns
+      lineinfile: dest=/etc/resolv.conf line="nameserver 2001:4860:4860::8888" regexp=^nameserver
+
+

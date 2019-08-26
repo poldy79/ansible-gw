@@ -1,0 +1,14 @@
+---
+  - hosts: gws
+    tasks:
+
+      - service: name=tinc enabled=yes
+      - file: path=/etc/tinc/ffsbb state=directory mode=0755
+      - git: repo=https://github.com/freifunk-stuttgart/tinc-ffsbb.git dest=/etc/tinc/ffsbb/tinc-ffsbb update=yes
+
+      - copy: src=secrets/tinc-{{gw}}{{instance}}.rsa_key.priv dest=/etc/tinc/ffsbb/rsa_key.priv
+      - file: path=/etc/tinc/ffsbb/rsa_key.priv state=touch mode="0600"
+      - file: src=/etc/tinc/ffsbb/tinc-ffsbb/conf.d dest=/etc/tinc/ffsbb/conf.d owner=root group=root state=link
+      - file: src=/etc/tinc/ffsbb/tinc-ffsbb/hosts dest=/etc/tinc/ffsbb/hosts owner=root group=root state=link
+      - lineinfile: dest=/etc/tinc/nets.boot line=ffsbb
+      - cron: name="tinc" minute="*/5" job="git -C /etc/tinc/ffsbb/tinc-ffsbb pull  > /dev/null && killall -HUP tincd"

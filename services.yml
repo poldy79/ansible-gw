@@ -1,0 +1,10 @@
+---
+  - hosts: gws
+    tasks:
+      - service: name=bird enabled=yes
+      - service: name=bird6 enabled=yes
+      - service: name=fastd@vpn00 enabled=yes
+      - service: name=fastd@vpn01 enabled=yes
+      - service: name=fastd@vpn02 enabled=yes
+      - service: name=fastd@vpn03 enabled=yes
+      - service: name=fastd@vpn04 enabled=yes

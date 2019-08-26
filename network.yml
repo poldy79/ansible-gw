@@ -1,0 +1,6 @@
+---
+- hosts: gws
+  tasks:
+    - name: add interface.d include
+      lineinfile: dest=/etc/network/interfaces line="source-directory interfaces.d"
+

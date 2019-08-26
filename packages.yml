@@ -1,0 +1,81 @@
+---
+- hosts: gws
+  tasks:
+      #    - name: Https
+      #apt: name=apt-transport-https state=installed 
+    - name: main
+      apt_repository: repo='deb http://debian.netcologne.de/debian stretch main' state=present
+      
+
+      #    - name: Add Repositories
+      #apt_repository: repo='deb https://repo.universe-factory.net/debian/ sid main' state=present
+
+    - name: Add stretch backports
+      apt_repository: repo="deb http://debian.mirrors.ovh.net/debian/ stretch-backports main" state=present
+
+    - name: Install all required packages
+      apt: name={{item}} state=installed update_cache=false
+      with_items:
+          - bsd-mailx
+          - apt-transport-https
+          - postfix
+          - monit
+          - attic
+          - mutt
+          - python-psutil
+          - collectd-core
+          - locales
+          - nginx
+          - bind9-host
+          - psmisc
+          - batctl
+          - fastd
+          - isc-dhcp-relay
+          - git-flow
+          - tinc
+          - coccinelle
+          - linux-headers-amd64
+          - htop
+          - libsodium-dev
+          - libuecc-dev
+          - libjson-c-dev
+          - bison
+          - cmake
+          - mtr
+          - vim
+          - iftop 
+          - uthash-dev
+          - rdiff-backup
+          - mosh
+          - apt-transport-https
+          - equivs
+          - unbound
+          - bird
+          - bird6 
+          - bridge-utils
+          - ethtool
+          - git
+          - haveged
+          - iproute
+          - iptables
+          - iptables-persistent
+          - man-db
+          - ntp
+          - openvpn
+          - python-argparse
+          - python-pip
+          - python3
+          - python3-netifaces
+          - radvd
+          - rrdtool
+          - sysfsutils
+          - vnstat
+          - vnstati
+          - libcap-dev
+          - pkgconf
+          - libgps-dev
+          - strace
+
+
+    - name: Install netaddr using pip
+      pip: name=netaddr

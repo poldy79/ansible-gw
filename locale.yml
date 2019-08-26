@@ -1,0 +1,6 @@
+- hosts: gws
+  tasks:
+    - apt:  name=locales state=installed update_cache=false
+    - command: localedef -i en_US -f UTF-8 en_US.UTF-8
+
+

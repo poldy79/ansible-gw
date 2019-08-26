@@ -1,0 +1,4 @@
+---
+  - hosts: gws
+    tasks:
+      - service: name=openvpn@freifunk enabled=yes

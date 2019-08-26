@@ -1,0 +1,12 @@
+---
+  - hosts: gws
+    tasks:
+      - name: clean
+        command: rm -Rf /usr/local/src/batman-adv
+      
+      - name: git clone
+        git: repo=https://git.open-mesh.org/batman-adv.git dest=/usr/local/src/batman-adv update=yes version=v2016.2
+        
+      - name: build
+        command: make -j8 install
+          chdir=/usr/local/src/batman-adv

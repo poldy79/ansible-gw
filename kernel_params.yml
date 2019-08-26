@@ -1,0 +1,64 @@
+---
+- hosts: gws
+  tasks:
+    - name: add nf_conntrack to /etc/modules
+      lineinfile: dest=/etc/modules line="nf_conntrack"
+
+    - name: add rt_tables
+      lineinfile: dest=/etc/iproute2/rt_tables line="42  icvpn"
+
+    - name: add rt_tables
+      lineinfile: dest=/etc/iproute2/rt_tables line="70  stuttgart"
+      
+    - name: add rt_tables
+      lineinfile: dest=/etc/iproute2/rt_tables line="71  nodefault"
+
+    - name: add rt_tables
+      lineinfile: dest=/etc/iproute2/rt_tables line="1000  othergw"
+
+    - name: add rt_tables
+      lineinfile: dest=/etc/iproute2/rt_tables line="2000  direct"
+
+    - name: add sys... foo
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv4.ip_forward= line=net.ipv4.ip_forward=1
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv4.conf.default.rp_filter line=net.ipv4.conf.default.rp_filter=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv4.conf.all.rp_filter= line=net.ipv4.conf.all.rp_filter=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.all.forwarding= line=net.ipv6.conf.all.forwarding=1
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.all.autoconf= line=net.ipv6.conf.all.autoconf=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.default.autoconf= line=net.ipv6.conf.default.autoconf=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.eth0.autoconf= line=net.ipv6.conf.eth0.autoconf=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.all.accept_ra= line=net.ipv6.conf.all.accept_ra=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.default.accept_ra= line=net.ipv6.conf.default.accept_ra=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.ipv6.conf.eth0.accept_ra= line=net.ipv6.conf.eth0.accept_ra=0
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.netfilter.nf_conntrack_tcp_timeout_established= line=net.netfilter.nf_conntrack_tcp_timeout_established=86400
+
+    - name: add sysctl.conf parameters
+      lineinfile: dest=/etc/sysctl.conf regexp=^net.netfilter.nf_conntrack_max= line=net.netfilter.nf_conntrack_max=262140
+    - sysctl: name="net.br00.bridge.hash_max" value=2048 sysctl_set=yes
+    - sysctl: name="net.br01.bridge.hash_max" value=2048 sysctl_set=yes
+    - sysctl: name="net.br02.bridge.hash_max" value=2048 sysctl_set=yes
+    - sysctl: name="net.br03.bridge.hash_max" value=2048 sysctl_set=yes
+    - sysctl: name="net.br04.bridge.hash_max" value=2048 sysctl_set=yes
+    - sysctl: name="net.br05.bridge.hash_max" value=2048 sysctl_set=yes
+
+
