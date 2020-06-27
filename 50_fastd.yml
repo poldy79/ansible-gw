@@ -1,0 +1,28 @@
+---
+  - hosts: gws
+    tasks:
+      - name: Install all required packages
+        apt: name={{item}} state=installed update_cache=false
+        with_items:
+          - bsd-mailx
+
+      - name: copy
+        command: cp "/lib/systemd/system/fastd@.service" /etc/systemd/system/
+
+      - name: copy secret
+        copy: src=secrets/fastd-{{gw}}.secret.conf dest=/etc/fastd/secret_peers.conf
+
+      - name: copy secret
+        copy: src=secrets/fastd-{{gw}}{{instance}}.secret.conf dest=/etc/fastd/secret_bb.conf
+
+      - name: enable fastd vpn services
+        service: name=fastd@{{ 'vpn%02i' | format(item) }} enabled=yes
+        loop: "{{ range(1, 32 +1, 1)|list }}"
+
+      - name: enable fastd bb services
+        service: name=fastd@{{ 'bb%02i' | format(item) }} enabled=yes
+        loop: "{{ range(1, 32 +1, 1)|list }}"
+
+      - git: repo=https://github.com/freifunk-stuttgart/peers-ffs.git dest=/etc/fastd/peers-ffs update=yes
+      - cron: name="fastd" minute="*/5" job="git -C /etc/fastd/peers-ffs pull  > /dev/null && killall -HUP fastd"
+

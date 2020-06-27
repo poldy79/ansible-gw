@@ -1,0 +1,30 @@
+---
+  - hosts: gws
+    tasks:
+      - name: clone repo to /var/lib/ffs
+        git: repo=https://github.com/freifunk-stuttgart/backbone.git dest=/var/lib/ffs/backbone update=yes
+
+      - name: Add bullseye repo
+        apt_repository: repo="deb http://deb.debian.org/debian/ bullseye main" state=present filename=bullseye
+
+      - lineinfile: 
+          dest: /etc/apt/preferences.d/limit-bullseye
+          line: "Package: *" 
+          create: yes
+      - lineinfile: 
+          dest: /etc/apt/preferences.d/limit-bullseye 
+          line: "Pin: release n=bullseye"
+      - lineinfile: 
+          dest: /etc/apt/preferences.d/limit-bullseye 
+          line: "Pin-Priority: 90"
+
+      - name: install wireguard
+        apt: name=wireguard state=present update_cache=false
+
+      - name: copy secret
+        copy: src=secrets/wg-{{gw}}{{instance}}.private.key dest=/etc/wireguard/wg-private.key mode=600
+
+      - name: copy pubkey
+        copy: src=secrets/wg-{{gw}}{{instance}}.public.key dest=/etc/wireguard/wg-public.key
+
+

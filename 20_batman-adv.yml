@@ -1,0 +1,27 @@
+---
+  - hosts: gws
+    tasks:
+      - name: clean
+        file: 
+          path: /usr/local/src/batman-adv
+          state: absent
+
+      - name: git clone
+        git: repo=https://git.open-mesh.org/batman-adv.git dest=/usr/local/src/batman-adv update=yes version=v2020.1
+        
+      - name: build
+        command: make -j8
+          chdir=/usr/local/src/batman-adv
+
+      - name: build
+        command: make install
+          chdir=/usr/local/src/batman-adv
+
+
+      - name: Install all required packages
+        apt: 
+          name: batctl 
+          state: present 
+          update_cache: false 
+          default_release: buster-backports
+

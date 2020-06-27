@@ -1,0 +1,71 @@
+---
+  - hosts: gw01n01
+    tasks:
+      - name: Intall tinc using apt
+        apt: name={{item}} state=installed update_cache=false
+        with_items:
+          - tinc
+
+      - lineinfile:
+          dest: /etc/network/interfaces
+          line: source-directory interfaces.d
+
+      - service: name=tinc enabled=no state=stopped
+      - file: path=/etc/tinc/ffsl3 state=directory mode=0755
+      - stat:
+          path: /etc/tinc/ffsl3/rsa_key.priv
+        register: stat_result_rsa_key_priv
+
+      - file: state=absent path=/etc/tinc/ffsl3/tinc
+        when: stat_result_rsa_key_priv.stat.exists == False 
+
+      - git:
+          repo: https://github.com/freifunk-stuttgart/tinc.git
+          dest: /etc/tinc/ffsl3/tinc
+          update: yes
+
+      - file: dest=/etc/tinc/ffsl3/conf.d src=/etc/tinc/ffsl3/tinc/ffsl3/conf.d owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/hosts src=/etc/tinc/ffsl3/tinc/ffsl3/hosts owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/subnet-export.sh src=/etc/tinc/ffsl3/tinc/ffsl3/subnet-export.sh owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/subnet-up src=/etc/tinc/ffsl3/tinc/ffsl3/subnet-up.sample owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/tinc-down src=/etc/tinc/ffsl3/tinc/ffsl3/tinc-down.sample owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/tinc-up src=/etc/tinc/ffsl3/tinc/ffsl3/tinc-up.sample owner=root group=root state=link
+      - file: dest=/etc/tinc/ffsl3/tinc.conf src=/etc/tinc/ffsl3/tinc/ffsl3/tinc.conf.sample owner=root group=root state=link
+
+      - cron: name="tinc" minute="*/5" job="git -C /etc/tinc/ffsl3/tinc pull  > /dev/null && killall -HUP tincd 2> /dev/null"
+      - blockinfile:
+          dest: /etc/network/interfaces.d/ffsl3
+          create: yes
+          block: |
+            allow-hotplug ffsl3
+            iface ffsl3 inet static
+                up ip l set dev ffsl3 up || true
+                address 10.191.255.{{bbid}}/24
+                netmask 255.255.255.0
+                broadcast 10.191.255.255
+                mtu 1280
+
+            iface lo inet static
+                address 10.191.255.{{bbid}}/24
+            
+            iface ffsl3 inet6 static
+               address fd21:b4dc:4b00::a38:{{bbid}}/64
+
+      - blockinfile:
+          dest: /etc/systemd/system/tinc@.service
+          create: yes
+          block: |
+            [Unit]
+            Description=tincd (connection %I)
+            After=network.target
+
+            [Service]
+            Type=simple
+            ExecStart=/usr/sbin/tincd -n %I -D
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+
+      - systemd: name=tinc@ffsl3 enabled=yes state=restarted
+

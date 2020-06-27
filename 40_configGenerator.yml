@@ -1,0 +1,18 @@
+---
+- hosts: gws
+  tasks:
+    - name: pull FfsConfigGenerator from github
+      git: repo=https://github.com/freifunk-stuttgart/FfsConfigGenerator.git dest=/root/FfsConfigGenerator update=yes version=master
+
+    - name: setup venv
+      command: ./create_venv.sh
+      args:
+        chdir: /root/FfsConfigGenerator
+
+    - name: Execute config generator
+      command: ./venv/bin/python gen_config.py --gwnum 1 --instance 1
+      args:
+        chdir: /root/FfsConfigGenerator
+
+        #- name: Copy over config files
+        #command: cp -r /root/ConfigGenerator/etc /

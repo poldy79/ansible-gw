@@ -1,9 +1,0 @@
----
-- hosts: gws:dhcp:vmhosts
-  tasks:
-      - apt: name=unattended-upgrades state=installed update_cache=false
-      - apt: name=apt-listchanges state=installed update_cache=false
-      - lineinfile: dest=/etc/apt/apt.conf.d/50unattended-upgrades regexp="//Unattended-Upgrade::Mail " line='Unattended-Upgrade::Mail "root";'
-      - lineinfile: dest=/etc/apt/apt.conf.d/50unattended-upgrades regexp="//Unattended-Upgrade::Automatic-Reboot " line='Unattended-Upgrade::Automatic-Reboot "false";'
-      - lineinfile: dest=/etc/apt/apt.conf.d/20auto-upgrades line='APT::Periodic::Update-Package-Lists "1";' create=yes
-      - lineinfile: dest=/etc/apt/apt.conf.d/20auto-upgrades line='APT::Periodic::Unattended-Upgrade "1";' create=yes
